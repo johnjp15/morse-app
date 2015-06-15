@@ -1,16 +1,24 @@
 package edu.tjhsst.morsemessenger;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
+
+import java.util.Calendar;
+import java.util.Date;
 
 import de.tavendo.autobahn.WebSocketConnection;
 import de.tavendo.autobahn.WebSocketException;
@@ -24,10 +32,44 @@ public class MorseActivity extends ActionBarActivity {
 
     static Button dot;
     static Button dash;
+    static Button exportHistoryButton;
     static TextView display;
     static Vibrator mVibrator;
 
     static String history;
+
+    static RelativeLayout fl;
+
+    final GestureDetector gestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
+        //        public boolean onSingleTapConfirmed(MotionEvent e)   {
+//            Log.e("", "SingleTapConfirmed detected.");
+//            return false;
+//        }
+        //use for dots
+        public boolean onSingleTapUp(MotionEvent e) {
+//            Log.e("", "SingleTapUp detected."); //debug
+            mConnection.sendTextMessage("dot");
+            return false;
+        }
+
+        //use for dashes
+        public void onLongPress(MotionEvent e) {
+//            Log.e("", "LongPress detected."); //debug
+            mConnection.sendTextMessage("dash");
+        }
+
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+//            Log.e("", "Fling detected."); //debug
+            mConnection.sendTextMessage("dash");
+            return false;
+        }
+    });
+
+    public boolean onTouchEvent(MotionEvent event) {
+        return gestureDetector.onTouchEvent(event);
+    }
+
+    ;
 
     private void start() {
         final String uri = "ws://104.236.237.210:8000";
@@ -50,7 +92,7 @@ public class MorseActivity extends ActionBarActivity {
                     else {
                         display.setText("-");
                         updateHistory("-");
-                        mVibrator.vibrate(250);
+                        mVibrator.vibrate(350);
                     }
                 }
 
@@ -81,14 +123,61 @@ public class MorseActivity extends ActionBarActivity {
 
         dot = (Button) findViewById(R.id.dot);
         dash = (Button) findViewById(R.id.dash);
+        exportHistoryButton = (Button) findViewById(R.id.history_button);
         display = (TextView) findViewById(R.id.received);
 
         mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
         history = "Session history: ";
 
-        start();
 
+
+        /*
+        fl = (RelativeLayout)findViewById(R.id.layoutframe);
+        fl.setOnTouchListener(new RelativeLayout.OnTouchListener() {
+            final Handler handler = new Handler();
+            Runnable mLongPressed = new Runnable() {
+                public void run() {
+                    Log.i("", "Long press!");
+                }
+            };
+
+            public void onClick(View v) {
+                Log.e("", "Click detected");
+            }
+
+            public void onLongPress(MotionEvent e) {
+                Log.e("", "Longpress detected");
+            }
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                //gesture detector to detect swipe.
+//                gestureDetector.onTouchEvent(arg1);
+                Log.e("", "Touch detected");
+                return false;//always return true to consume event
+
+            }
+        });
+        */
+
+        start();
+        exportHistoryButton.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+//                Calendar c = Calendar.getInstance();
+//                Date d = c.getTime();
+
+//                String dateAndTime = Calendar.get(Calendar.MONTH) + "/" + Calendar.get(Calendar.DAY_OF_WEEK) + "/" + Calendar.get(Calendar.YEAR) - 1900 + " " + Calendar.get(Calendar.HOUR_OF_DAY) + ":" + Calendar.get(Calendar.MINUTE) + ":" + Calendar.get(Calendar.SECOND);
+//
+//                String exportedText = dateAndTime + " " + history;
+//
+//                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+//                sharingIntent.setType("text/plain");
+//                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
+//                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, exportedText);
+//                startActivity(Intent.createChooser(sharingIntent, exportedText));//getResources().getString(R.string.share_using)));
+            }
+        });
         dot.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 mConnection.sendTextMessage("dot");
