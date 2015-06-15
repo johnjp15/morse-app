@@ -27,6 +27,8 @@ public class MorseActivity extends ActionBarActivity {
     static TextView display;
     static Vibrator mVibrator;
 
+    static String history;
+
     private void start() {
         final String uri = "ws://104.236.237.210:8000";
         Log.d(TAG, "Status: Starting");
@@ -42,11 +44,13 @@ public class MorseActivity extends ActionBarActivity {
                 public void onTextMessage(String payload) {
                     if(payload.equals("dot")) {
                         display.setText(".");
+                        updateHistory(".");
                         mVibrator.vibrate(100);
                     }
                     else {
                         display.setText("-");
-                        mVibrator.vibrate(200);
+                        updateHistory("-");
+                        mVibrator.vibrate(250);
                     }
                 }
 
@@ -60,6 +64,16 @@ public class MorseActivity extends ActionBarActivity {
         }
     }
 
+    private void updateHistory(String addition) {
+        int histLength = history.length();
+
+        history += (addition + " ");
+
+        TextView msgHistoryTV = (TextView) findViewById(R.id.msgHistory_textview);
+
+        msgHistoryTV.setText(history);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,16 +85,20 @@ public class MorseActivity extends ActionBarActivity {
 
         mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
+        history = "Session history: ";
+
         start();
 
         dot.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 mConnection.sendTextMessage("dot");
+//                updateHistory(".");
             }
         });
         dash.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 mConnection.sendTextMessage("dash");
+//                updateHistory("-");
             }
         });
     }

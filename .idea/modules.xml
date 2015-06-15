@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MorseMessenger.iml" filepath="$PROJECT_DIR$/MorseMessenger.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/morse-app.iml" filepath="$PROJECT_DIR$/morse-app.iml" />
     </modules>
   </component>
 </project>
-
